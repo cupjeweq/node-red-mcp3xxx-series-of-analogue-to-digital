@@ -1,0 +1,87 @@
+
+<script type="text/html" data-template-name="sunrise">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i><span data-i18n="sunrise.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]sunrise.label.name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-lat"><i class="fa fa-globe"></i><span data-i18n="sunrise.label.latitude"></span></label>
+        <input type="text" id="node-input-lat" placeholder="51.025">
+    </div>
+    <div class="form-row">
+        <label for="node-input-lon"><i class="fa fa-globe"></i><span data-i18n="sunrise.label.longitude"></span></label>
+        <input type="text" id="node-input-lon" placeholder="-1.4">
+    </div>
+    <div class="form-row">
+        <label for="node-input-start"><i class="fa fa-clock-o"></i><span data-i18n="sunrise.label.start"></label>
+        <select id="node-input-start" style='width:70%'>
+            <option value="nightEnd" data-i18n="sunrise.nightEnd"></option>
+            <option value="nauticalDawn" data-i18n="sunrise.nauticalDawn"></option>
+            <option value="dawn" data-i18n="sunrise.dawn"></option>
+            <option value="sunrise" data-i18n="sunrise.sunrise"></option>
+            <option value="sunriseEnd" data-i18n="sunrise.sunriseEnd"></option>
+            <option value="goldenHourEnd" data-i18n="sunrise.goldenHourEnd"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-end"><i class="fa fa-clock-o"></i><span data-i18n="sunrise.label.end"></label>
+        <select id="node-input-end" style='width:70%'>
+            <option value="goldenHour" data-i18n="sunrise.goldenHour"></option>
+            <option value="sunsetStart" data-i18n="sunrise.sunsetStart"></option>
+            <option value="sunset" data-i18n="sunrise.sunset"></option>
+            <option value="dusk" data-i18n="sunrise.dusk"></option>
+            <option value="nauticalDusk" data-i18n="sunrise.nauticalDusk"></option>
+            <option value="night" data-i18n="sunrise.night"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-arrows-h"></i><span data-i18n="sunrise.label.offset"></label>
+        <span style="margin-right:4px" data-i18n="sunrise.start"></span> <input type="text" id="node-input-soff" placeholder="minutes" style='width:60px;' > <span data-i18n="sunrise.mins"></span>
+        <span style="margin-left:14px; margin-right:4px" data-i18n="sunrise.end"></span> <input type="text" id="node-input-eoff" placeholder="minutes" style='width:60px;'><span data-i18n="sunrise.mins"></span>
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('sunrise',{
+        category: 'time',
+        color:"#ffcc66",
+        defaults: {
+            name: {value:""},
+            lat: {value:"", required:true, validate:RED.validators.number()},
+            lon: {value:"", required:true, validate:RED.validators.number()},
+            start: {value:"sunrise", required:true},
+            end: {value:"sunset", required:true},
+            soff: {value:0, validate:RED.validators.number()},
+            eoff: {value:0, validate:RED.validators.number()},
+        },
+        inputs:0,
+        outputs:2,
+        outputLabels: function(i) {
+            return [
+                this._("sunrise.onePerMin"),
+                this._("sunrise.onse")
+            ][i];
+        },
+        icon: "sun.png",
+        label: function() {
+            return this.name||this._("sunrise.sunName");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (($("#node-input-lat").val() === "") && ($("#node-input-lon").val() === "")) {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        $("#node-input-lat").val(Number(position.coords.latitude.toFixed(5)));
+                        $("#node-input-lon").val(Number(position.coords.longitude.toFixed(5)));
+                    });
+                }
+            }
+            if ($("#node-input-soff").val() === "") { $("#node-input-soff").val(0) }
+            if ($("#node-input-eoff").val() === "") { $("#node-input-eoff").val(0) }
+            $("#node-input-soff").spinner({});
+            $("#node-input-eoff").spinner({});
+        }
+    });
+</script>

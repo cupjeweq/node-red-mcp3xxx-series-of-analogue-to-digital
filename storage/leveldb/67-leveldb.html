@@ -1,0 +1,102 @@
+
+<script type="text/html" data-template-name="leveldbase">
+    <div class="form-row">
+        <label for="node-config-input-db"><i class="fa fa-briefcase"></i> Database</label>
+        <input type="text" id="node-config-input-db" placeholder="database path/name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-encoding"><i class="fa fa-random"></i> Values are</label>
+
+        <select type="text" id="node-config-input-encoding">
+            <option value="utf8">text</option>
+            <option value="json">JSON</option>
+            <option value="binary">binary</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('leveldbase',{
+        category: 'config',
+        defaults: {
+            db: {value:"",required:true},
+            encoding: {value:"utf8"}
+        },
+        label: function() {
+            return this.db;
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="leveldb in">
+    <div class="form-row node-input-level">
+        <label for="node-input-level"><i class="fa fa-briefcase"></i> Database</label>
+        <input type="text" id="node-input-level">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('leveldb in',{
+        category: 'storage-input',
+        color:"#dbb84d",
+        defaults: {
+            level: {type:"leveldbase",required:true},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "leveldb.png",
+        label: function() {
+            var levelNode = RED.nodes.node(this.level);
+            return this.name||(levelNode?levelNode.label():"leveldb");
+        },
+            labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="leveldb out">
+    <div class="form-row node-input-level">
+        <label for="node-input-level"><i class="fa fa-briefcase"></i> Database</label>
+        <input type="text" id="node-input-level">
+    </div>
+    <div class="form-row">
+        <label for="node-input-operation"><i class="fa fa-wrench"></i> Operation</label>
+        <select type="text" id="node-input-operation" style="display: inline-block; vertical-align: top;">
+            <option value="store">Store</option>
+            <option value="delete">Delete</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('leveldb out',{
+        category: 'storage-output',
+        color:"#dbb84d",
+        defaults: {
+            level: {type:"leveldbase",required:true},
+            operation: {value:"store"},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "leveldb.png",
+        align: "right",
+        label: function() {
+            var levelNode = RED.nodes.node(this.level);
+            return this.name||(levelNode?levelNode.label():"leveldb");
+        },
+            labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

@@ -1,0 +1,99 @@
+
+<script type="text/html" data-template-name="smooth">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-property"><i class="fa fa-ellipsis-h"></i> <span data-i18n="node-red:common.label.property"></span></label>
+        <input type="text" id="node-input-property" style="width:70%;"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-bolt"></i> Action</label>
+        <select id="node-input-action" style="width:60%; margin-right:5px;">
+            <option value="max">Return the maximum value seen</option>
+            <option value="min">Return the minimum value seen</option>
+            <option value="mean">Return the mean value</option>
+            <option value="sd">Return the standard deviation</option>
+            <option value="low">Perform low pass filter</option>
+            <option value="high">Perform high pass filter</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-count">&nbsp;</label>
+        <span id="node-over">over the most recent </span>
+        <input type="text" id="node-input-count" placeholder="10" style="width:50px;"/>
+        <span id="node-over2"> values</span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-round">(optionally)</label>
+        round to <input type="text" id="node-input-round" placeholder="ignore" style="width:50px;"/> decimal places
+    </div>
+    <div class="form-row">
+    <label for="node-input-mult">Treat</label>
+        <select id="node-input-mult" style="width:60%; margin-right:5px;">
+            <option value="single">All msg as one stream.</option>
+            <option value="multi">Different msg.topic as individual streams.</option>
+        </select>
+    </div>
+    <div class="form-row" id="row-input-reduce">
+        <label for="node-input-reduce"><i class="fa fa-compress"></i> Reduce</label>
+        <input type="checkbox" id="node-input-reduce" style="display:inline-block; width:20px; vertical-align:baseline;">
+        only emit one message per most recent N values
+    </div>
+    <div class="form-tips" id="node-tip">Tip: This node ONLY works with numbers.</div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('smooth', {
+        color: "#E2D96E",
+        category: 'function',
+        defaults: {
+            name: {value:""},
+            property: {value:"payload",required:true},
+            action: {value:"mean"},
+            count: {value:"10",required:true,validate:RED.validators.number()},
+            round: {value:""},
+            mult: {value:"single"},
+            reduce: {value:false}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "smooth.png",
+        label: function() {
+            return this.name || "smooth";
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        },
+        outputLabels: function() { return this.reduce === true ? (this.action+" of "+this.count) : (this.action); },
+        oneditprepare: function() {
+            if (this.property === undefined) {
+                $("#node-input-property").val("payload");
+            }
+            $("#node-input-property").typedInput({default:'msg',types:['msg']});
+            $("#node-input-count").spinner({
+                min:1
+            });
+            $("#node-input-round").spinner({
+            });
+            $("#node-input-action").change( function() {
+                var a = $("#node-input-action").val();
+                if ((a === "high") ||  ( a === "low" )) {
+                    $("#node-over").html("with a smoothing factor of ");
+                    $("#node-over2").html("");
+                    $("#row-input-reduce").hide();
+                }
+                else {
+                    $("#node-over").html("over the most recent ");
+                    $("#node-over2").html(" values");
+                    $("#row-input-reduce").show();
+                }
+            });
+            $("#node-input-action").change();
+            if ($("#node-input-round").val() === "true") {
+                $("#node-input-round").val(0);
+            }
+        }
+    });
+</script>

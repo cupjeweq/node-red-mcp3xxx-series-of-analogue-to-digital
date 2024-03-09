@@ -1,0 +1,11 @@
+#!/bin/bash
+python_cmd='python3'
+# Fallback to Python 2, if Python 3 is not available
+command -v python3 > /dev/null || python_cmd='python'
+
+BASEDIR=$(dirname $0)
+if [ "$1" == "check" ];then
+	$python_cmd -c "import rpi_ws281x"
+else
+	sudo $python_cmd -u $BASEDIR/neopix.py $@
+fi

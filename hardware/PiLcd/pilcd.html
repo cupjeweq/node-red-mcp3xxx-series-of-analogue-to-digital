@@ -1,0 +1,33 @@
+<script type="text/html" data-template-name="rpi-lcd">
+    <div class="form-row">
+        <label for="node-input-pins"><i class="fa fa-circle"></i> <span data-i18n="pilcd.label.pins"></label>
+        <input type="text" id="node-input-pins" placeholder="RS,E,D4,D5,D6,D7">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-tips" data-i18n="[html]pilcd.tip.tip"></div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('rpi-lcd',{
+        category: 'Raspberry Pi',
+        color:"#c6dbef",
+        defaults: {
+            name: { value:"" },
+            pins: { value:"", required:true, validate:RED.validators.regex(/^\d+,\d+,\d+,\d+,\d+,\d+$/) }
+        },
+        inputs:1,
+        outputs:0,
+        align:"right",
+        icon:"rpi.png",
+        label:function() {
+            return this.name||"Pi LCD";
+        },
+        labelStyle:function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
